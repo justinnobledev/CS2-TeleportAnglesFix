@@ -52,8 +52,12 @@ public class TeleportAnglesFix : BasePlugin
 
         if (!_angleCache.TryGetValue(controller.Slot, out var angle)) return HookResult.Continue;
         
-        pawn.Teleport(angles: angle);
-        _angleCache.Remove(controller.Slot);
+        Server.RunOnTick(Server.TickCount + 1, () =>
+        {
+            pawn.Teleport(angles: angle);
+            _angleCache.Remove(controller.Slot);
+        });
+        
 
         return HookResult.Continue;
     }

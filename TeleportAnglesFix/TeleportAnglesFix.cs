@@ -40,7 +40,7 @@ namespace TeleportAnglesFix
         {
             try
             {
-                var configPath = Path.Combine(ModuleDirectory, "telefix-maplist.json");
+                var configPath = Path.Combine(ModuleDirectory, "maplist.json");
                 if (!File.Exists(configPath))
                 {
                     CreateDefaultConfig(configPath);

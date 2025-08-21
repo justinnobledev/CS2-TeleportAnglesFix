@@ -1,8 +1,8 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Logging;
 
 namespace TeleportAnglesFix;
 
@@ -15,10 +15,13 @@ public class TeleportAnglesFix : BasePlugin
     
     private Dictionary<int, QAngle> _angleCache = new();
 
+    private FakeConVar<bool> g_bEnableFix = new("css_enable_teleport_ang_fix", "Enable teleport angle fix", true);
+
     [EntityOutputHook("trigger_teleport", "OnStartTouch")]
     public HookResult OnStartTouch(CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller,
         CVariant value, float delay)
     {
+        if (!g_bEnableFix.Value) return HookResult.Continue;
         if (activator.DesignerName != "player") return HookResult.Continue;
 
         var pawn = activator.As<CCSPlayerPawn>();
@@ -39,6 +42,7 @@ public class TeleportAnglesFix : BasePlugin
     public HookResult OnEndTouch(CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller,
         CVariant value, float delay)
     {
+        if (!g_bEnableFix.Value) return HookResult.Continue;
         if (activator.DesignerName != "player") return HookResult.Continue;
 
         var pawn = new CCSPlayerPawn(activator.Handle);

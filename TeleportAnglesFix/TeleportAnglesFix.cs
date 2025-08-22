@@ -9,13 +9,18 @@ namespace TeleportAnglesFix;
 public class TeleportAnglesFix : BasePlugin
 {
     public override string ModuleName { get; } = "Teleport Angles Fix";
-    public override string ModuleVersion { get; } = "1.2";
+    public override string ModuleVersion { get; } = "1.2.1";
     public override string ModuleAuthor { get; } = "Retro";
     public override string ModuleDescription { get; } = "Fixes the angles of the player when they teleport.";
     
     private Dictionary<int, QAngle> _angleCache = new();
 
-    private FakeConVar<bool> g_bEnableFix = new("css_enable_teleport_ang_fix", "Enable teleport angle fix", true);
+    public FakeConVar<bool> g_bEnableFix = new("css_enable_teleport_ang_fix", "Enable teleport angle fix", true);
+
+    public override void Load(bool hotReload)
+    {
+        RegisterFakeConVars(typeof(ConVar));
+    }
 
     [EntityOutputHook("trigger_teleport", "OnStartTouch")]
     public HookResult OnStartTouch(CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller,

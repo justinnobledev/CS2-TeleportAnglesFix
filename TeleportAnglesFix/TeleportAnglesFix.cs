@@ -17,9 +17,12 @@ public class TeleportAnglesFix : BasePlugin
 
     public FakeConVar<bool> g_bEnableFix = new("css_enable_teleport_ang_fix", "Enable teleport angle fix", true);
 
+    public Dictionary<string, CInfoTeleportDestination?> _teleportPairs = [];
+
     public override void Load(bool hotReload)
     {
         RegisterFakeConVars(typeof(ConVar));
+        RegisterListener<Listeners.OnMapEnd>(() => { _teleportPairs.Clear(); });
     }
 
     [EntityOutputHook("trigger_teleport", "OnStartTouch")]
@@ -40,7 +43,27 @@ public class TeleportAnglesFix : BasePlugin
 
         _angleCache[controller.Slot] = new QAngle(pawn.EyeAngles.X, pawn.EyeAngles.Y, pawn.EyeAngles.Z);
 
-        return HookResult.Continue;
+        var dest = FindTeleportDestination(teleport);
+        if (dest is null) return HookResult.Continue;
+
+        var offset = ((System.Numerics.Vector3)controller.PlayerPawn.Value.AbsOrigin) - ((System.Numerics.Vector3)teleport.AbsOrigin);
+        Server.RunOnTick(Server.TickCount + 1, () =>
+        {
+            var newOrigin = ((System.Numerics.Vector3)dest.AbsOrigin) + offset;
+            controller.Teleport(position: newOrigin, angles: (System.Numerics.Vector3)_angleCache[controller.Slot]);
+        });
+
+        return HookResult.Stop;
+    }
+
+    private CInfoTeleportDestination? FindTeleportDestination(CTriggerTeleport teleport)
+    {
+        if (_teleportPairs.TryGetValue(teleport.UniqueHammerID, out var dest))
+            return dest;
+        dest = Utilities.FindAllEntitiesByDesignerName<CInfoTeleportDestination>("info_teleport_destination")
+                    .Where((ent) => ent.Target == teleport.Target).FirstOrDefault();
+        _teleportPairs.Add(teleport.UniqueHammerID, dest);
+        return dest;
     }
 
     [EntityOutputHook("trigger_teleport", "OnEndTouch")]
@@ -60,6 +83,9 @@ public class TeleportAnglesFix : BasePlugin
         if (teleport.UseLandmarkAngles || teleport.Landmark == "") return HookResult.Continue;
 
         if (!_angleCache.TryGetValue(controller.Slot, out var angle)) return HookResult.Continue;
+
+        var dest = FindTeleportDestination(teleport);
+        if (dest is not null) return HookResult.Stop;
         
         Server.RunOnTick(Server.TickCount + 1, () =>
         {

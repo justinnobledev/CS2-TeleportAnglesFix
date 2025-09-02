@@ -39,7 +39,7 @@ public class TeleportAnglesFix : BasePlugin
         if (controller.SteamID <= 0) return HookResult.Continue;
 
         var teleport = caller.As<CTriggerTeleport>();
-        if (teleport.UseLandmarkAngles || teleport.Landmark == "") return HookResult.Continue;
+        if (!teleport.UseLandmarkAngles || string.IsNullOrEmpty(teleport.Landmark)) return HookResult.Continue;
 
         _angleCache[controller.Slot] = new QAngle(pawn.EyeAngles.X, pawn.EyeAngles.Y, pawn.EyeAngles.Z);
 
@@ -80,7 +80,7 @@ public class TeleportAnglesFix : BasePlugin
         if (controller.SteamID <= 0) return HookResult.Continue;
         
         var teleport = caller.As<CTriggerTeleport>();
-        if (teleport.UseLandmarkAngles || teleport.Landmark == "") return HookResult.Continue;
+        if (!teleport.UseLandmarkAngles || string.IsNullOrEmpty(teleport.Landmark)) return HookResult.Continue;
 
         if (!_angleCache.TryGetValue(controller.Slot, out var angle)) return HookResult.Continue;
 

@@ -9,7 +9,7 @@ namespace TeleportAnglesFix;
 public class TeleportAnglesFix : BasePlugin
 {
     public override string ModuleName { get; } = "Teleport Angles Fix";
-    public override string ModuleVersion { get; } = "1.2.1";
+    public override string ModuleVersion { get; } = "1.2.2";
     public override string ModuleAuthor { get; } = "Retro";
     public override string ModuleDescription { get; } = "Fixes the angles of the player when they teleport.";
     

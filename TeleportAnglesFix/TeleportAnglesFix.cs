@@ -10,7 +10,7 @@ namespace TeleportAnglesFix;
 public class TeleportAnglesFix : BasePlugin
 {
     public override string ModuleName { get; } = "Teleport Angles Fix";
-    public override string ModuleVersion { get; } = "1.1";
+    public override string ModuleVersion { get; } = "1.2.3";
     public override string ModuleAuthor { get; } = "Retro";
     public override string ModuleDescription { get; } = "Fixes the angles of the player when they teleport.";
     
@@ -64,7 +64,10 @@ public class TeleportAnglesFix : BasePlugin
         
         Server.RunOnTick(Server.TickCount + 1, () =>
         {
-            pawn.Teleport(angles: angle);
+            if (pawn.IsValid && pawn.Controller.IsValid && pawn.Controller.Value is not null)
+            {
+                pawn.Teleport(angles: angle);
+            }
             _angleCache.Remove(controller.Slot);
         });
         

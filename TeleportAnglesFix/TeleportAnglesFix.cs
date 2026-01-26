@@ -43,7 +43,7 @@ public class TeleportAnglesFix : BasePlugin
     
     private HookResult Hook_OnStartTouch(DynamicHook arg)
     {
-        if (g_bEnableFix.Value) return HookResult.Continue;
+        if (!g_bEnableFix.Value) return HookResult.Continue;
         var trigger = arg.GetParam<CBaseTrigger>(0);
         if (!trigger.IsValid) return HookResult.Continue;
         if (!trigger.DesignerName.Equals("trigger_teleport")) return HookResult.Continue;
